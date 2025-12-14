@@ -1,36 +1,144 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LifeChecker — Health Insights App
+
+A native mobile app (iOS/Android) that uses daily signal reports to give risk insights across different health domains.
+
+## Features
+
+### 🏠 Dashboard
+- Overall wellbeing score with animated progress
+- Health domain cards with scores and trends
+- Quick check-in button with streak tracking
+- Recent insights preview
+
+### ✅ Daily Check-In
+- **Adaptive Question Selection**: Prioritizes high-variance or recently changed signals
+- **Smart Confirmations**: Stable signals get "same as usual" prompts to reduce friction
+- **Domain Diversity**: Ensures coverage across all health areas
+- **Haptic Feedback**: Native feel with tactile responses
+
+### 💡 Insights
+- Template-based insight generation
+- Decline alerts (sleep, mental, movement, nutrition)
+- Progress celebrations
+- Consistency milestones (7-day, 14-day streaks)
+- Mark as read / dismiss functionality
+
+### 📊 Weekly Summary
+- Check-in streak statistics
+- Overall change percentage
+- Domain trend mini-charts
+- Per-domain signal breakdown
+
+## Health Domains
+
+| Domain | Signals | Weight |
+|--------|---------|--------|
+| 🌙 **Sleep** | Quality, Duration, Falling Asleep | 1.2x |
+| 🧠 **Mental** | Mood, Stress, Clarity | 1.3x |
+| ⚡ **Energy** | Morning, Afternoon levels | 1.1x |
+| 🥗 **Nutrition** | Meal Quality, Hydration | 1.0x |
+| 🏃 **Movement** | Activity, Movement Breaks | 1.0x |
+| 💬 **Social** | Connection, Quality Time | 0.8x |
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+
+- Expo Go app on your phone (iOS/Android)
+- OR Xcode (for iOS simulator) / Android Studio (for Android emulator)
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Install dependencies
+npm install
+
+# Start the development server
+npx expo start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Running the App
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **On your phone**: Scan the QR code with Expo Go (Android) or Camera app (iOS)
+2. **iOS Simulator**: Press `i` in the terminal
+3. **Android Emulator**: Press `a` in the terminal
+4. **Web**: Press `w` in the terminal
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Architecture
 
-## Learn More
+```
+/app
+  _layout.tsx       # Root layout
+  checkin.tsx       # Check-in flow (fullscreen modal)
+  /(tabs)
+    _layout.tsx     # Tab navigation
+    index.tsx       # Dashboard/Home
+    insights.tsx    # Insights list
+    summary.tsx     # Weekly summary
 
-To learn more about Next.js, take a look at the following resources:
+/src
+  /components       # Reusable UI components (future)
+  /store
+    data.ts         # Static domains, signals, questions, templates
+    storage.ts      # AsyncStorage persistence layer
+    questionSelector.ts  # Adaptive question selection
+  /types
+    index.ts        # TypeScript interfaces
+  /utils
+    theme.ts        # Colors, typography, spacing
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How It Works
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Adaptive Question Selection
+1. Gets all primary questions not asked today
+2. Calculates priority based on:
+   - Signal variance (higher = more priority)
+   - Days since last asked
+   - Deviation from baseline
+   - Domain weight
+3. Reduces priority for stable signals (uses confirmations)
+4. Ensures domain diversity in selection
 
-## Deploy on Vercel
+### Signal Aggregation
+- 7-day rolling averages
+- Variance and consistency scores
+- 30-day baseline comparison
+- Domain-level weighted summaries
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Insight Generation
+Checks templates against patterns:
+- **Decline**: Score dropped > threshold over N days
+- **Improvement**: Score rose > threshold over N days
+- **Consistency**: Check-in streak milestones
+- **Milestone**: Total tracking duration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Design
+
+- **Dark theme** with deep indigo/purple background
+- **Domain-specific colors** for visual organization
+- **Smooth animations** via Reanimated
+- **Haptic feedback** for native feel
+- **Tab navigation** with custom icons
+
+## Tech Stack
+
+- **Framework**: React Native + Expo (SDK 52)
+- **Navigation**: Expo Router
+- **Storage**: AsyncStorage
+- **Animations**: React Native Reanimated
+- **Styling**: StyleSheet (native)
+- **Haptics**: expo-haptics
+- **Date handling**: date-fns
+
+## Design Principles
+
+1. **Personal Baseline**: Compares to your own history, not population norms
+2. **No Diagnostic Claims**: Describes patterns without medical interpretation
+3. **Low Friction**: Adaptive questions + confirmations reduce daily burden
+4. **Neutral Language**: Non-alarmist insight messaging
+5. **Progress-Positive**: Celebrates stability and improvement
+
+## License
+
+MIT
